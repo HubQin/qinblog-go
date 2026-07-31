@@ -1,0 +1,91 @@
+{{define "title"}}{{if .post.ID}}编辑文章{{else}}发布文章{{end}} - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="card post-editor">
+    <div class="card-body">
+        <h4 class="mb-4">{{if .post.ID}}编辑文章{{else}}发布文章{{end}}</h4>
+
+        <form id="vue-app" action="{{if .post.ID}}/posts/{{.post.ID}}{{else}}/posts{{end}}" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="_token" value="{{.csrfToken}}">
+            {{if .post.ID}}<input type="hidden" name="_method" value="PUT">{{end}}
+
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" class="form-control" id="title" name="title" required minlength="2" maxlength="100"
+                       value="{{or (index .old "title") .post.Title}}" placeholder="请填写标题（2 - 100 个字符）">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>分类</label>
+                    <single-select-component name="category_id" :options="categories" :initial="form.categoryId"
+                                             placeholder="选择分类"></single-select-component>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>专题（可留空，输入新名称可创建）</label>
+                    <single-select-component name="topic_id" :options="topics" :initial="form.topicId"
+                                             :taggable="true" placeholder="选择或创建专题"></single-select-component>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="sort">专题内排序</label>
+                    <input type="number" class="form-control" id="sort" name="sort" min="0"
+                           value="{{or (index .old "sort") .post.Sort}}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>标签（输入新名称可创建）</label>
+                <multi-select-component name="tag_ids" :options="tags" :initial="form.tagIds"
+                                        :taggable="true" placeholder="选择或创建标签"></multi-select-component>
+            </div>
+
+            <div class="form-group">
+                <label>内容（Markdown）</label>
+                <simple-mde-component name="body" :initial="form.body"
+                                      upload-url="/posts/upload_post_image"></simple-mde-component>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="slug">Slug（SEO 友好链接，留空自动根据标题翻译生成）</label>
+                    <input type="text" class="form-control" id="slug" name="slug"
+                           value="{{or (index .old "slug") .post.Slug}}" placeholder="如 my-first-post">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="is_show">是否显示</label>
+                    <select class="form-control" id="is_show" name="is_show">
+                        <option value="1" {{if eq .post.IsShow 1}}selected{{end}}>显示</option>
+                        <option value="0" {{if eq .post.IsShow 0}}selected{{end}}>隐藏</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="order">首页排序权重</label>
+                    <input type="number" class="form-control" id="order" name="order" min="0"
+                           value="{{or (index .old "order") .post.Order}}">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">{{if .post.ID}}保存修改{{else}}发布{{end}}</button>
+        </form>
+    </div>
+</div>
+{{end}}
+
+{{define "scripts"}}
+<script>
+    window.__vueOptions = {
+        el: '#vue-app',
+        data: {
+            categories: {{json .formCategories}},
+            topics: {{json .formTopics}},
+            tags: {{json .formTags}},
+            form: {
+                categoryId: {{json .post.CategoryID}},
+                topicId: {{json .post.TopicID}},
+                tagIds: {{json .postTagIDs}},
+                body: {{json (or (index .old "body") .post.Body)}}
+            }
+        }
+    };
+</script>
+{{end}}

@@ -1,0 +1,36 @@
+{{define "title"}}我的通知 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="card">
+    <div class="card-header">我的通知</div>
+    <div class="card-body">
+        {{range .notifications}}
+            {{$d := .ParsedData}}
+            <div class="media notification-item mb-3 pb-3 border-bottom">
+                <img src="{{if $d.UserAvatar}}{{$d.UserAvatar | safeurl}}{{else}}/images/default_avartar.jpg{{end}}"
+                     class="mr-3 rounded-circle" width="40" height="40" alt="{{$d.UserName}}">
+                <div class="media-body">
+                    <div class="mb-1">
+                        <a href="/users/{{$d.UserID}}">{{$d.UserName}}</a>
+                        {{if .IsPostCommented}}
+                            评论了你的文章 <a href="{{$d.PostLink | safeurl}}">{{$d.PostTitle}}</a>
+                        {{else}}
+                            回复了你的评论{{with $d.PostLink}} <a href="{{. | safeurl}}">查看</a>{{end}}
+                        {{end}}
+                        <span class="small text-muted ml-2">{{timeago .CreatedAt}}</span>
+                    </div>
+                    {{if not .IsPostCommented}}
+                        {{with $d.ParentCommentContent}}
+                            <blockquote class="small text-muted border-left pl-2 mb-1">{{. | safe}}</blockquote>
+                        {{end}}
+                    {{end}}
+                    <div class="comment-content small">{{$d.CommentContent | safe}}</div>
+                </div>
+            </div>
+        {{else}}
+            <div class="empty-block text-center text-muted py-5">暂无通知</div>
+        {{end}}
+        {{template "partials/pagination" .pagination}}
+    </div>
+</div>
+{{end}}

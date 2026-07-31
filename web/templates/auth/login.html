@@ -1,0 +1,35 @@
+{{define "title"}}登录 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header">登录</div>
+            <div class="card-body">
+                <form action="/login" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" name="email" required
+                               value="{{index .old "email"}}" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1">
+                        <label class="form-check-label" for="remember">记住我</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">登录</button>
+                </form>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="/socials/github/redirect" class="btn btn-sm btn-dark"><i class="fab fa-github"></i> GitHub 登录</a>
+                    <a href="/password/reset" class="small">忘记密码？</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

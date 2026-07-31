@@ -1,0 +1,31 @@
+{{define "title"}}重置密码 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header">重置密码</div>
+            <div class="card-body">
+                <form action="/password/reset" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <input type="hidden" name="token" value="{{.token}}">
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" name="email" required
+                               value="{{.email}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">新密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirmation">确认新密码</label>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">重置密码</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

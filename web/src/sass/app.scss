@@ -1,0 +1,392 @@
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+
+// markdown editor（EasyMDE 的基础 css 在 app.js 中引入）
+@import 'markdown_editor';
+
+/* universal */
+
+body {
+    font-family: Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    font-size: 14px;
+    color: #404040;
+    margin-bottom: 60px;
+
+    h1 {
+        font-weight: 600;
+        font-size: 1.9em;
+    }
+
+    img {
+        max-width: 100%;
+    }
+}
+
+/* header */
+
+.navbar-static-top {
+    border-color: #e7e7e7;
+    background-color: #fff;
+    box-shadow: 0px 1px 11px 2px rgba(42, 42, 42, 0.1);
+    border-top: 4px solid #93d5dc;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 40px;
+    margin-top: 0px;
+}
+
+/* Sticky footer styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+.markdown-body {
+    font-size: 16px;
+    line-height: 1.8;
+
+    h2 {
+        font-weight: 600;
+        font-size: 1.42em;
+        margin: 1.42em 0 0.5em;
+    }
+    h3,h4,h5,h6 {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin: 1.42em 0 0.5em;
+    }
+
+    image {
+        max-width: 100%;
+    }
+
+    pre {
+        code {
+            padding: 1.1em;
+        }
+    }
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #000;
+
+    .container {
+        padding-right: 15px;
+        padding-left: 15px;
+
+        p {
+            margin: 19px 0;
+            color: #c1c1c1;
+
+            a {
+                color: inherit;
+            }
+        }
+    }
+}
+
+/* Post Index Page */
+.root-page, .posts-index-page, .topics-index-page, .categories-show-page,
+.tags-show-page, .topics-show-page, .archives-show-page{
+    .post-list {
+        .nav > li > a {
+            position: relative;
+            display: block;
+            padding: 5px 14px;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #444444;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        .post-title {
+            font-size: 15px;
+        }
+        .post-time {
+            color: #a8a8a8;
+            font-size: 13px;
+        }
+
+
+        hr {
+            margin-top: 12px;
+            margin-bottom: 12px;
+            border: 0;
+            border-top: 1px solid #dcebf5;
+        }
+    }
+
+    .media {
+        align-items: center;
+        justify-content: center;
+
+        .media-left {
+            margin-right: 10px;
+        }
+    }
+}
+.topics-index-page .topic-card {
+    margin-bottom: 1em;
+}
+
+.posts-search-page {
+    .post-title {
+        font-weight: 600;
+        a, &:hover {
+            text-decoration: none;
+
+        }
+    }
+    em {
+        color: red !important;
+    }
+}
+
+.sidebar a {
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.form-control input {
+    min-height: 40px;
+    display: block;
+    padding: 8px 40px 0 8px;
+    border-radius: 5px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+    font-size: 14px;
+}
+
+@media only screen and (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+.icon {
+    width: 1.5em; height: 1.5em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
+/*
+ * Markdown 编辑器（EasyMDE）
+ */
+
+.CodeMirror-fullscreen,
+.editor-preview-side,
+.editor-toolbar.fullscreen {
+    z-index: 1030;
+}
+
+.editor-preview {
+    z-index: 1030;
+}
+
+#accordion {
+    .card-header {
+        padding: 0.75em 1em;
+        background: transparent;
+    }
+    h5 {
+        div {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin: 0;
+            font-weight: 600;
+            -webkit-transition: background .1s ease,color .1s ease;
+            transition: background .1s ease,color .1s ease;
+
+            span {
+                font-size: 16px;
+                line-height: 17px;
+                height: 16px;
+            }
+
+            .icon {
+                width: 1.8em;
+                height: 1.8em;
+            }
+        }
+
+    }
+
+}
+
+/** placeholder color **/
+input, select {
+    &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #ADADAD !important;
+        opacity: 1 !important; /* Firefox */
+        font-size: 14px;
+    }
+
+    &::-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: #ADADAD !important;
+        font-size: 14px;
+    }
+
+    &::-ms-input-placeholder { /* Microsoft Edge */
+        color: #ADADAD !important;
+        font-size: 14px;
+    }
+}
+
+
+.form-control {
+    min-height: 40px;
+    display: block;
+    border-radius: 5px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+    font-size: 14px;
+}
+
+.toc-container {
+    padding: 1.25rem 0.8rem;
+}
+
+.posts-show-page {
+    .nested-comment {
+        margin-left: 3em;
+        margin-top: 1em;
+
+        li {
+            &:first-child {
+                padding-top: 1em;
+                border-top: 1px dashed #0000001a;
+            }
+        }
+    }
+    .reply-icon {
+        float: right;
+        color: rgba(0,0,0,0.3);
+        &:hover {
+            color:rgba(0,0,0,0.6);
+        }
+    }
+    .comment-title-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.posts-show-page .article-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#back-to-top {
+    display: inline-block;
+    background-color: #93d5dc;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    border-radius: 25px;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    transition: background-color .3s,
+    opacity .5s, visibility .5s;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 2147483647;
+
+    &:after{
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f077";
+        font-style: normal;
+        font-size: 2em;
+        line-height: 50px;
+        color: #fff;
+    }
+    &:hover {
+        cursor: pointer;
+        background-color: #333;
+    }
+    &:active {
+        background-color: #555;
+    }
+}
+
+.back-to-top-show {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.sidebar-media-body {
+    display: flex !important;
+    justify-content: space-between !important;
+}
+
+@media (min-width: 500px) {
+    #button {
+        margin: 30px;
+    }
+}
+
+/* 消息通知 */
+.notification-badge {
+    .badge {
+        font-size: 12px;
+        margin-top: 14px;
+    }
+
+    .badge-secondary {
+        background-color: #EBE8E8;
+    }
+
+    .badge-hint {
+        background-color: #d15b47 !important;
+    }
+}
+/* 文章搜索框 */
+#post-search {
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    border-radius: 500rem;
+    padding: 4px;
+    display: flex;
+    height: 36px;
+    align-items: center;
+
+    .post-search-input {
+        border: unset;
+        margin: 0;
+        max-width: 100%;
+        -webkit-box-flex: 1;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+        text-align: left;
+        height: 31px;
+        line-height: 30px;
+        font-family: Lato, Helvetica, Neue;
+        padding: 0.6em;
+        color: rgba(0, 0, 0, 0.5);
+        box-shadow: none;
+        background: unset;
+    }
+
+    .post-search-btn {
+        height: 23px;
+        margin: 0 4px;
+        padding: 0;
+        color: rgba(0, 0, 0, 0.5);
+    }
+}

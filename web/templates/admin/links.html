@@ -1,0 +1,58 @@
+{{define "title"}}友链管理 - 管理后台{{end}}
+
+{{define "content"}}
+{{template "partials/admin_nav" .}}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">友情链接管理</div>
+            <div class="card-body">
+                <table class="table table-sm table-hover">
+                    <thead><tr><th>ID</th><th>名称</th><th>URL</th><th>Logo</th><th>排序</th><th>显示</th><th style="width:220px">操作</th></tr></thead>
+                    <tbody>
+                    {{range .items}}
+                        <tr>
+                            <td>{{.ID}}</td>
+                            <td><input type="text" class="form-control form-control-sm" name="name" value="{{.Name}}" form="link-form-{{.ID}}"></td>
+                            <td><input type="text" class="form-control form-control-sm" name="url" value="{{.URL}}" form="link-form-{{.ID}}"></td>
+                            <td><input type="text" class="form-control form-control-sm" name="logo" value="{{.Logo}}" form="link-form-{{.ID}}"></td>
+                            <td style="width:80px"><input type="number" class="form-control form-control-sm" name="sort" value="{{.Sort}}" form="link-form-{{.ID}}"></td>
+                            <td>
+                                <select class="form-control form-control-sm" name="status" form="link-form-{{.ID}}">
+                                    <option value="1" {{if eq .Status 1}}selected{{end}}>显示</option>
+                                    <option value="0" {{if eq .Status 0}}selected{{end}}>隐藏</option>
+                                </select>
+                            </td>
+                            <td class="text-nowrap">
+                                <form id="link-form-{{.ID}}" action="/admin/links/{{.ID}}" method="post" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{$.csrfToken}}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">保存</button>
+                                </form>
+                                {{template "partials/admin_delete_form" (dict "action" (printf "/admin/links/%d" .ID) "csrfToken" $.csrfToken)}}
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr><td colspan="7" class="text-center text-muted py-4">暂无数据</td></tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">新增友链</div>
+            <div class="card-body">
+                <form action="/admin/links" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <div class="form-group"><label>名称</label><input type="text" class="form-control" name="name" required></div>
+                    <div class="form-group"><label>URL</label><input type="url" class="form-control" name="url" required></div>
+                    <div class="form-group"><label>Logo（可留空）</label><input type="text" class="form-control" name="logo"></div>
+                    <div class="form-group"><label>排序</label><input type="number" class="form-control" name="sort" value="0"></div>
+                    <button type="submit" class="btn btn-primary">新增</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

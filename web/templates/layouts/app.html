@@ -1,0 +1,29 @@
+{{define "layouts/app"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{.csrfToken}}">
+    <title>{{block "title" .}}{{index .siteConfigs "name"}} - {{index .siteConfigs "slogan"}}{{end}}</title>
+    <meta name="keywords" content="{{index .siteConfigs "seo_keyword"}}">
+    <meta name="description" content="{{index .siteConfigs "seo_description"}}">
+    {{with index .siteConfigs "iconfont_url"}}<link rel="stylesheet" href="{{. | safeurl}}">{{end}}
+    {{vite "src/js/app.js"}}
+    <style>:root { --main-color: {{index .siteConfigs "main_color" | safecss}}; }</style>
+</head>
+<body class="{{.routeClass}}">
+<div id="app" class="{{.routeClass}}">
+    {{template "partials/header" .}}
+
+    <div class="container main-container pt-4 pb-4">
+        {{template "partials/messages" .}}
+        {{block "content" .}}{{end}}
+    </div>
+
+    {{template "partials/footer" .}}
+</div>
+{{block "scripts" .}}{{end}}
+</body>
+</html>
+{{end}}

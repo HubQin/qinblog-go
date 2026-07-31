@@ -1,0 +1,34 @@
+{{define "title"}}仪表盘 - 管理后台{{end}}
+
+{{define "content"}}
+{{template "partials/admin_nav" .}}
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-4">{{.postCount}}</div>
+                <div class="text-muted">文章</div>
+                <a href="/admin/posts" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-4">{{.commentCount}}</div>
+                <div class="text-muted">评论</div>
+                <a href="/admin/comments" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-4">{{.userCount}}</div>
+                <div class="text-muted">用户</div>
+                <a href="/admin/users" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

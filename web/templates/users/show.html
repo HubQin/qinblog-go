@@ -1,0 +1,44 @@
+{{define "title"}}{{.profileUser.Name}} 的个人主页 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="card user-profile-card text-center">
+            <div class="card-body">
+                <img src="{{.profileUser.AvatarURL}}" class="rounded-circle mb-3" width="96" height="96" alt="{{.profileUser.Name}}">
+                <h1 class="h5 mb-1">{{.profileUser.Name}}</h1>
+                <p class="text-muted small mb-0">注册于 {{date .profileUser.CreatedAt "2006-01-02"}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link {{if ne .tab "comments"}}active{{end}}" href="/users/{{.profileUser.ID}}">Ta 的文章</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{if eq .tab "comments"}}active{{end}}" href="/users/{{.profileUser.ID}}?tab=comments">Ta 的评论</a>
+            </li>
+        </ul>
+
+        {{if eq .tab "comments"}}
+            {{range .userComments}}
+                <div class="card mb-3">
+                    <div class="card-body py-3">
+                        <div class="comment-content mb-2">{{.Content | safe}}</div>
+                        <div class="small text-muted">
+                            {{if .Post}}评论了 <a href="{{.Post.Link}}">{{.Post.Title}}</a> · {{end}}{{timeago .CreatedAt}}
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                <div class="empty-block text-center text-muted py-5">暂无评论</div>
+            {{end}}
+        {{else}}
+            {{template "partials/post_list" (dict "posts" .userPosts)}}
+        {{end}}
+
+        {{template "partials/pagination" .pagination}}
+    </div>
+</div>
+{{end}}

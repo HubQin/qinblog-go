@@ -1,0 +1,78 @@
+{{define "title"}}站点设置 - 管理后台{{end}}
+
+{{define "content"}}
+{{template "partials/admin_nav" .}}
+<div class="card">
+    <div class="card-header">站点设置</div>
+    <div class="card-body">
+        <form action="/admin/settings" method="post">
+            <input type="hidden" name="_token" value="{{.csrfToken}}">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="name">站点名称</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{index .settings "name"}}" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="slogan">Slogan</label>
+                    <input type="text" class="form-control" id="slogan" name="slogan" value="{{index .settings "slogan"}}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="logo">Logo 图片地址</label>
+                    <input type="text" class="form-control" id="logo" name="logo" value="{{index .settings "logo"}}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="iconfont_url">Iconfont CSS 地址</label>
+                    <input type="text" class="form-control" id="iconfont_url" name="iconfont_url" value="{{index .settings "iconfont_url"}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="seo_keyword">SEO 关键词</label>
+                <input type="text" class="form-control" id="seo_keyword" name="seo_keyword" value="{{index .settings "seo_keyword"}}">
+            </div>
+            <div class="form-group">
+                <label for="seo_description">SEO 描述</label>
+                <textarea class="form-control" id="seo_description" name="seo_description" rows="2">{{index .settings "seo_description"}}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="beian">备案号</label>
+                    <input type="text" class="form-control" id="beian" name="beian" value="{{index .settings "beian"}}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="main_color">主色调</label>
+                    <input type="text" class="form-control" id="main_color" name="main_color" value="{{index .settings "main_color"}}" placeholder="如 rgba(54,137,218,0.8)">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="email">联系邮箱</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{index .settings "email"}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="notice">公告</label>
+                <textarea class="form-control" id="notice" name="notice" rows="2">{{index .settings "notice"}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="footer">页脚文本</label>
+                <input type="text" class="form-control" id="footer" name="footer" value="{{index .settings "footer"}}">
+            </div>
+            <div class="form-group">
+                <label for="about">关于页内容（Markdown）</label>
+                <textarea class="form-control" id="about" name="about" rows="8">{{index .settings "about"}}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="qr_wechat_office">公众号二维码图片地址</label>
+                    <input type="text" class="form-control" id="qr_wechat_office" name="qr_wechat_office" value="{{index .settings "qr_wechat_office"}}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="qr_weapp">小程序二维码图片地址</label>
+                    <input type="text" class="form-control" id="qr_weapp" name="qr_weapp" value="{{index .settings "qr_weapp"}}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">保存设置</button>
+        </form>
+    </div>
+</div>
+{{end}}

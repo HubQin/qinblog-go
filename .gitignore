@@ -1,0 +1,50 @@
+# ---- 环境变量与密钥 ----
+.env
+.env.local
+.env.*.local
+.env.backup
+*.pem
+*.key
+
+# ---- Go 编译产物 ----
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/vendor/
+
+# ---- 前端 ----
+web/node_modules/
+web/public/build/
+web/public/hot
+npm-debug.log*
+yarn-error.log*
+.vite/
+
+# ---- 运行时数据（生成物，不入库）----
+# bleve 全文索引，由 cmd/indexer 重建
+storage/bleve/
+# 用户上传文件（UPLOAD_PATH）
+storage/app/
+# 注意：storage/verify/*.png 为验收截图，需要入库，故不忽略
+
+# ---- 日志 ----
+*.log
+/logs/
+
+# ---- IDE / 编辑器 ----
+.idea/
+.vscode/
+.qoder/
+*.iml
+*.swp
+*~
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db
+desktop.ini

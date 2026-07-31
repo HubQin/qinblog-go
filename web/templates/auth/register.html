@@ -1,0 +1,35 @@
+{{define "title"}}注册 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card">
+            <div class="card-header">注册</div>
+            <div class="card-body">
+                <form action="/register" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <div class="form-group">
+                        <label for="name">用户名</label>
+                        <input type="text" class="form-control" id="name" name="name" required minlength="2" maxlength="25"
+                               value="{{index .old "name"}}" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" id="email" name="email" required
+                               value="{{index .old "email"}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirmation">确认密码</label>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">注册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

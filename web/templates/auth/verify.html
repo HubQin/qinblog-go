@@ -1,0 +1,21 @@
+{{define "title"}}验证邮箱 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header">验证你的邮箱地址</div>
+            <div class="card-body">
+                <p>继续操作前，请先查收你邮箱中的验证链接邮件。</p>
+                <p class="mb-0">
+                    如果你没有收到邮件，
+                    <form action="/email/resend" method="post" class="d-inline">
+                        <input type="hidden" name="_token" value="{{.csrfToken}}">
+                        <button type="submit" class="btn btn-link p-0 align-baseline">点击重新发送</button>
+                    </form>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

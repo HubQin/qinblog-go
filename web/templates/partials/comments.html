@@ -1,0 +1,76 @@
+{{define "partials/comment_list"}}
+<div class="comment-list" id="comments">
+    <h5 class="mb-3">评论 ({{.post.CommentCount}})</h5>
+    {{range .comments}}
+        {{template "partials/comment_item" (dict "comment" . "currentUser" $.currentUser "csrfToken" $.csrfToken "post" $.post "depth" 0)}}
+    {{else}}
+        <p class="text-muted">暂无评论，来抢沙发吧~</p>
+    {{end}}
+</div>
+{{end}}
+
+{{define "partials/comment_item"}}
+{{$c := .comment}}
+{{$user := .currentUser}}
+<div class="media comment-item mb-3" id="comment{{$c.ID}}">
+    {{if $c.User}}
+        <img src="{{$c.User.AvatarURL}}" class="mr-3 rounded-circle" width="40" height="40" alt="{{$c.User.Name}}">
+    {{end}}
+    <div class="media-body">
+        <div class="comment-meta small text-muted mb-1">
+            {{if $c.User}}<a href="/users/{{$c.UserID}}" class="mr-2">{{$c.User.Name}}</a>{{end}}
+            <span>{{timeago $c.CreatedAt}}</span>
+            {{if not $c.Approved}}<span class="badge badge-warning ml-2">审核中</span>{{end}}
+        </div>
+        <div class="comment-content">{{$c.Content | safe}}</div>
+        <div class="comment-actions small">
+            {{if $user}}
+                <a href="javascript:;" class="reply-btn mr-2" data-target="#reply-form-{{$c.ID}}">回复</a>
+                {{if or (eq $user.ID $c.UserID) $user.IsAdmin}}
+                    <form action="/comments/{{$c.ID}}" method="post" class="d-inline"
+                          onsubmit="return confirm('确定要删除此评论吗？');">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{.csrfToken}}">
+                        <button type="submit" class="btn btn-link btn-sm p-0 text-danger align-baseline">删除</button>
+                    </form>
+                {{end}}
+            {{end}}
+        </div>
+
+        {{if $user}}
+            <div class="reply-form collapse mt-2" id="reply-form-{{$c.ID}}">
+                <form action="/replies/store" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <input type="hidden" name="post_id" value="{{.post.ID}}">
+                    <input type="hidden" name="parent_id" value="{{$c.ID}}">
+                    <div class="form-group mb-2">
+                        <textarea class="form-control" name="content" rows="2" placeholder="回复 {{if $c.User}}{{$c.User.Name}}{{end}}..." required minlength="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">提交回复</button>
+                </form>
+            </div>
+        {{end}}
+
+        {{range $c.Replies}}
+            {{template "partials/comment_item" (dict "comment" . "currentUser" $user "csrfToken" $.csrfToken "post" $.post "depth" 1)}}
+        {{end}}
+    </div>
+</div>
+{{end}}
+
+{{define "partials/comment_box"}}
+<div class="comment-box mt-4" id="comment-box">
+    {{if .currentUser}}
+        <form action="/comments/store" method="post">
+            <input type="hidden" name="_token" value="{{.csrfToken}}">
+            <input type="hidden" name="post_id" value="{{.post.ID}}">
+            <div class="form-group">
+                <textarea class="form-control" name="content" rows="4" placeholder="说点什么吧...（支持 Markdown）" required minlength="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">发表评论</button>
+        </form>
+    {{else}}
+        <p class="text-muted">请 <a href="/login">登录</a> 后发表评论</p>
+    {{end}}
+</div>
+{{end}}

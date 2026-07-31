@@ -1,0 +1,70 @@
+{{define "title"}}{{.post.Title}} - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-lg-9">
+        <article class="post-detail card mb-4">
+            <div class="card-body">
+                <h1 class="h3 post-title mb-3">{{.post.Title}}</h1>
+                <div class="post-meta small text-muted mb-4">
+                    {{if .post.User}}<a href="/users/{{.post.UserID}}" class="mr-3"><img src="{{.post.User.AvatarURL}}" class="rounded-circle mr-1" width="20" height="20" alt="">{{.post.User.Name}}</a>{{end}}
+                    {{if .post.Category.Name}}<a href="/categories/{{.post.CategoryID}}" class="mr-3"><i class="{{.post.Category.Icon}}"></i> {{.post.Category.Name}}</a>{{end}}
+                    <span class="mr-3"><i class="far fa-clock"></i> {{date .post.CreatedAt "2006-01-02"}}</span>
+                    <span class="mr-3"><i class="far fa-comment"></i> {{.post.CommentCount}}</span>
+                    <span><i class="far fa-eye"></i> {{.totalViews}}</span>
+                </div>
+
+                {{if .topicPosts}}
+                    <div class="topic-post-list card bg-light mb-4">
+                        <div class="card-body py-3">
+                            <h6 class="mb-2">{{with .post.Topic}}专题《{{.Name}}》文章列表{{else}}专题文章列表{{end}}</h6>
+                            <ol class="mb-0 pl-4">
+                                {{range .topicPosts}}
+                                    <li>{{if eq .ID $.post.ID}}<strong>{{.Title}}</strong>{{else}}<a href="{{.Link}}">{{.Title}}</a>{{end}}</li>
+                                {{end}}
+                            </ol>
+                        </div>
+                    </div>
+                {{end}}
+
+                <div class="post-body markdown-body">{{.post.Body | safe}}</div>
+
+                {{if .post.Tags}}
+                    <div class="post-tags mt-4">
+                        {{range .post.Tags}}<a href="/tags/{{.ID}}" class="badge badge-secondary mr-1">{{.Name}}</a>{{end}}
+                    </div>
+                {{end}}
+
+                {{if .canManage}}
+                    <div class="post-manage mt-4 pt-3 border-top">
+                        <a href="/posts/{{.post.ID}}/edit" class="btn btn-sm btn-outline-secondary mr-2"><i class="far fa-edit"></i> 编辑</a>
+                        <form action="/posts/{{.post.ID}}" method="post" class="d-inline"
+                              onsubmit="return confirm('确定要删除此文章吗？');">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{.csrfToken}}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="far fa-trash-alt"></i> 删除</button>
+                        </form>
+                    </div>
+                {{end}}
+            </div>
+        </article>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                {{template "partials/comment_list" .}}
+                {{template "partials/comment_box" .}}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div id="vue-app">
+            <toc content-selector=".post-body"></toc>
+        </div>
+        {{template "partials/sidebar" .}}
+    </div>
+</div>
+{{end}}
+
+{{define "scripts"}}
+<script>window.__vueOptions = { el: '#vue-app' };</script>
+{{end}}

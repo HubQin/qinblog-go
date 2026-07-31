@@ -1,0 +1,14 @@
+{{define "title"}}{{if .pageTitle}}{{.pageTitle}} - {{end}}{{index .siteConfigs "name"}} - {{index .siteConfigs "slogan"}}{{end}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-lg-9">
+        {{with .pageTitle}}<h1 class="h4 page-title mb-4">{{.}}</h1>{{end}}
+        {{template "partials/post_list" .}}
+        {{template "partials/pagination" .pagination}}
+    </div>
+    <div class="col-lg-3">
+        {{template "partials/sidebar" .}}
+    </div>
+</div>
+{{end}}

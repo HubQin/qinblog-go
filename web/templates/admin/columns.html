@@ -1,0 +1,50 @@
+{{define "title"}}栏目管理 - 管理后台{{end}}
+
+{{define "content"}}
+{{template "partials/admin_nav" .}}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">导航栏目管理</div>
+            <div class="card-body">
+                <table class="table table-sm table-hover">
+                    <thead><tr><th>ID</th><th>名称</th><th>链接</th><th>描述</th><th style="width:220px">操作</th></tr></thead>
+                    <tbody>
+                    {{range .items}}
+                        <tr>
+                            <td>{{.ID}}</td>
+                            <td><input type="text" class="form-control form-control-sm" name="name" value="{{.Name}}" form="col-form-{{.ID}}"></td>
+                            <td><input type="text" class="form-control form-control-sm" name="link" value="{{.Link}}" form="col-form-{{.ID}}"></td>
+                            <td><input type="text" class="form-control form-control-sm" name="description" value="{{.Description}}" form="col-form-{{.ID}}"></td>
+                            <td class="text-nowrap">
+                                <form id="col-form-{{.ID}}" action="/admin/columns/{{.ID}}" method="post" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{$.csrfToken}}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">保存</button>
+                                </form>
+                                {{template "partials/admin_delete_form" (dict "action" (printf "/admin/columns/%d" .ID) "csrfToken" $.csrfToken)}}
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr><td colspan="5" class="text-center text-muted py-4">暂无数据</td></tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">新增栏目</div>
+            <div class="card-body">
+                <form action="/admin/columns" method="post">
+                    <input type="hidden" name="_token" value="{{.csrfToken}}">
+                    <div class="form-group"><label>名称</label><input type="text" class="form-control" name="name" required></div>
+                    <div class="form-group"><label>链接（如 /categories/1）</label><input type="text" class="form-control" name="link" required></div>
+                    <div class="form-group"><label>描述</label><input type="text" class="form-control" name="description"></div>
+                    <button type="submit" class="btn btn-primary">新增</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

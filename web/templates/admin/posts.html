@@ -1,0 +1,56 @@
+{{define "title"}}文章管理 - 管理后台{{end}}
+
+{{define "content"}}
+{{template "partials/admin_nav" .}}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>文章管理</span>
+        <a href="/posts/create" class="btn btn-sm btn-primary">发布文章</a>
+    </div>
+    <div class="card-body">
+        <form class="form-inline mb-3" method="get" action="/admin/posts">
+            <input type="text" class="form-control form-control-sm mr-2" name="keyword" placeholder="标题关键词"
+                   value="{{.keyword}}">
+            <select class="form-control form-control-sm mr-2" name="is_show">
+                <option value="">全部</option>
+                <option value="1" {{if eq .isShow "1"}}selected{{end}}>显示</option>
+                <option value="0" {{if eq .isShow "0"}}selected{{end}}>隐藏</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">筛选</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                <tr><th>ID</th><th>标题</th><th>分类</th><th>作者</th><th>评论</th><th>浏览</th><th>状态</th><th>创建时间</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                {{range .posts}}
+                    <tr>
+                        <td>{{.ID}}</td>
+                        <td><a href="{{.Link}}" target="_blank">{{str_limit .Title 40}}</a></td>
+                        <td>{{.Category.Name}}</td>
+                        <td>{{if .User}}{{.User.Name}}{{end}}</td>
+                        <td>{{.CommentCount}}</td>
+                        <td>{{.ViewCount}}</td>
+                        <td>{{if eq .IsShow 1}}<span class="badge badge-success">显示</span>{{else}}<span class="badge badge-secondary">隐藏</span>{{end}}</td>
+                        <td>{{date .CreatedAt "2006-01-02"}}</td>
+                        <td class="text-nowrap">
+                            <a href="/posts/{{.ID}}/edit" class="btn btn-sm btn-outline-secondary">编辑</a>
+                            <form action="/admin/posts/{{.ID}}/toggle" method="post" class="d-inline">
+                                <input type="hidden" name="_token" value="{{$.csrfToken}}">
+                                <button type="submit" class="btn btn-sm btn-outline-info">{{if eq .IsShow 1}}隐藏{{else}}显示{{end}}</button>
+                            </form>
+                            {{template "partials/admin_delete_form" (dict "action" (printf "/admin/posts/%d" .ID) "csrfToken" $.csrfToken)}}
+                        </td>
+                    </tr>
+                {{else}}
+                    <tr><td colspan="9" class="text-center text-muted py-4">暂无数据</td></tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+        {{template "partials/pagination" .pagination}}
+    </div>
+</div>
+{{end}}

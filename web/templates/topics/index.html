@@ -1,0 +1,29 @@
+{{define "title"}}专题 - {{index .siteConfigs "name"}}{{end}}
+
+{{define "content"}}
+<h1 class="h4 page-title mb-4">专题</h1>
+<div class="row">
+    {{range .topics}}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5"><a href="/topics/{{.ID}}">{{.Name}}</a></h2>
+                    {{with .Description}}<p class="text-muted small">{{.}}</p>{{end}}
+                    <ol class="pl-4 mb-0">
+                        {{range .Posts}}
+                            <li><a href="{{.Link}}">{{.Title}}</a></li>
+                        {{else}}
+                            <p class="text-muted small mb-0">暂无文章</p>
+                        {{end}}
+                    </ol>
+                </div>
+                <div class="card-footer bg-white small">
+                    <a href="/topics/{{.ID}}">查看全部 {{.PostCount}} 篇 &raquo;</a>
+                </div>
+            </div>
+        </div>
+    {{else}}
+        <div class="col-12"><div class="empty-block text-center text-muted py-5">暂无专题</div></div>
+    {{end}}
+</div>
+{{end}}

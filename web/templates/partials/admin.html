@@ -1,0 +1,26 @@
+{{define "partials/admin_nav"}}
+{{$a := or .adminActive ""}}
+<div class="admin-nav mb-4">
+    <h1 class="h4 mb-3">管理后台</h1>
+    <ul class="nav nav-pills flex-wrap">
+        <li class="nav-item"><a class="nav-link {{if eq $a "dashboard"}}active{{end}}" href="/admin">仪表盘</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "posts"}}active{{end}}" href="/admin/posts">文章</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "comments"}}active{{end}}" href="/admin/comments">评论</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "categories"}}active{{end}}" href="/admin/categories">分类</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "tags"}}active{{end}}" href="/admin/tags">标签</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "topics"}}active{{end}}" href="/admin/topics">专题</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "columns"}}active{{end}}" href="/admin/columns">栏目</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "links"}}active{{end}}" href="/admin/links">友链</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "users"}}active{{end}}" href="/admin/users">用户</a></li>
+        <li class="nav-item"><a class="nav-link {{if eq $a "settings"}}active{{end}}" href="/admin/settings">站点设置</a></li>
+    </ul>
+</div>
+{{end}}
+
+{{define "partials/admin_delete_form"}}
+<form action="{{.action}}" method="post" class="d-inline" onsubmit="return confirm('确定要删除吗？');">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{.csrfToken}}">
+    <button type="submit" class="btn btn-sm btn-outline-danger">删除</button>
+</form>
+{{end}}
