@@ -124,7 +124,8 @@ func FuncMap() template.FuncMap {
 			return t.Format(layout)
 		},
 		"timeago":  TimeAgo,
-		"markdown": func(s string) template.HTML { return template.HTML(support.Parsedown(s)) },
+		// markdown 渲染：goldmark 开了 unsafe，输出前必须净化
+		"markdown": func(s string) template.HTML { return template.HTML(support.Clean(support.Parsedown(s))) },
 		"add":      func(a, b int) int { return a + b },
 		"sub":      func(a, b int) int { return a - b },
 		"until":    func(n int) []int { r := make([]int, n); for i := range r { r[i] = i }; return r },

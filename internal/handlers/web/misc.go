@@ -153,8 +153,8 @@ func NotificationsIndex(c *gin.Context) {
 	})
 }
 
-// About 关于页（GET /about，settings 中 about 的 markdown 渲染）
+// About 关于页（GET /about，模板内用 markdown 函数渲染 settings 中的 about）
 func About(c *gin.Context) {
-	about := support.Parsedown(services.Settings.Get("about"))
+	about := services.Settings.Get("about")
 	render.HTML(c, http.StatusOK, "pages/about", gin.H{"about": about})
 }

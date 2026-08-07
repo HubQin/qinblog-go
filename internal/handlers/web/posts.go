@@ -168,8 +168,7 @@ func PostsEdit(c *gin.Context) {
 		c.String(http.StatusForbidden, "无权操作")
 		return
 	}
-	// 编辑时把存储的 HTML 转回 markdown（等价 html_to_markdown）
-	post.Body = support.HTMLToMarkdown(post.Body)
+	// body 存的是 markdown 原文，直接填入编辑器
 
 	data := postFormOptions()
 	data["post"] = &post

@@ -68,7 +68,8 @@ func (s *searchService) IndexPost(p *models.Post) {
 	}
 	_ = s.index.Index(strconv.FormatUint(uint64(p.ID), 10), postDoc{
 		Title: p.Title,
-		Body:  support.StripTags(p.Body),
+		// body 存的是 markdown 原文，先渲染再去标签得到纯文本
+		Body: support.StripTags(support.Parsedown(p.Body)),
 	})
 }
 
@@ -90,7 +91,7 @@ func (s *searchService) RebuildAll() (int, error) {
 	for i := range posts {
 		if err := batch.Index(strconv.FormatUint(uint64(posts[i].ID), 10), postDoc{
 			Title: posts[i].Title,
-			Body:  support.StripTags(posts[i].Body),
+			Body:  support.StripTags(support.Parsedown(posts[i].Body)),
 		}); err != nil {
 			return 0, err
 		}

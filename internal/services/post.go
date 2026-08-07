@@ -46,10 +46,10 @@ func (s *postService) Update(post *models.Post, in PostInput) (*models.Post, err
 func (s *postService) save(post *models.Post, in PostInput, isNew bool) (*models.Post, error) {
 	oldCategoryID := post.CategoryID
 
-	// 等价 PostsController：body = parsedown()；PostObserver::saving：clean + make_excerpt
+	// body 直接存 markdown 原文（展示时由 markdown 模板函数渲染+净化），摘要仍由渲染产物生成
 	post.Title = in.Title
-	post.Body = support.Clean(support.Parsedown(in.Body))
-	post.Excerpt = support.MakeExcerpt(post.Body, 200)
+	post.Body = in.Body
+	post.Excerpt = support.MakeExcerpt(support.Clean(support.Parsedown(in.Body)), 200)
 	post.CategoryID = in.CategoryID
 	post.IsShow = in.IsShow
 	post.Order = in.Order

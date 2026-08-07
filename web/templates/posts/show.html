@@ -27,7 +27,7 @@
                     </div>
                 {{end}}
 
-                <div class="post-body markdown-body">{{.post.Body | safe}}</div>
+                <div class="post-body markdown-body">{{markdown .post.Body}}</div>
 
                 {{if .post.Tags}}
                     <div class="post-tags mt-4">
