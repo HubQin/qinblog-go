@@ -41,11 +41,18 @@ body {
 html {
     position: relative;
     min-height: 100%;
+    /* 目录锚点跳转平滑滚动 */
+    scroll-behavior: smooth;
 }
 
 .markdown-body {
     font-size: 16px;
     line-height: 1.8;
+
+    /* 锚点跳转时预留出顶部导航栏高度，避免标题被遮挡 */
+    h2, h3 {
+        scroll-margin-top: 80px;
+    }
 
     h2 {
         font-weight: 600;
@@ -257,8 +264,91 @@ input, select {
     font-size: 14px;
 }
 
+/* 文章页侧栏：先展示推荐/标签等卡片，目录卡片吸顶跟随长文滚动 */
+.post-sidebar {
+    display: flex;
+    flex-direction: column;
+
+    .sidebar-toc-wrap {
+        /* 占据侧栏剩余高度，作为 sticky 的吸附轨道；
+           不能用 height:100%，否则会把前面的卡片挤到页面底部 */
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+}
+
 .toc-container {
     padding: 1.25rem 0.8rem;
+    position: sticky;
+    top: 70px;
+
+    h6 {
+        padding-left: 0.5rem;
+        margin-bottom: 0.75rem;
+        border-left: 3px solid #93d5dc;
+        font-weight: 600;
+    }
+
+    .vue-toc {
+        /* 目录本身过长时内部滚动，不撑开页面 */
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+        padding-right: 2px;
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+
+            /* h3 子级缩进 */
+            ul {
+                padding-left: 0.75rem;
+            }
+        }
+
+        a {
+            display: block;
+            padding: 0.28rem 0.5rem;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #555;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+
+            &:hover {
+                color: #2a86b5;
+                background-color: rgba(147, 213, 220, 0.12);
+                border-left-color: #93d5dc;
+                text-decoration: none;
+            }
+        }
+
+        /* 一级标题条目 */
+        .toc-2 > a {
+            font-weight: 600;
+        }
+
+        /* 二级标题条目 */
+        .toc-3 > a {
+            font-size: 12.5px;
+            color: #777;
+        }
+
+        /* 内部滚动条美化 */
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #d8d8d8;
+            border-radius: 2px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
 }
 
 .posts-show-page {

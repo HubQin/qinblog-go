@@ -56,11 +56,11 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
-        <div id="vue-app">
+    <div class="col-lg-3 post-sidebar">
+        {{template "partials/sidebar" .}}
+        <div id="vue-app" class="sidebar-toc-wrap">
             <toc content-selector=".post-body"></toc>
         </div>
-        {{template "partials/sidebar" .}}
     </div>
 </div>
 {{end}}

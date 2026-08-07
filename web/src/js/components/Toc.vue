@@ -39,6 +39,7 @@ export default {
                     const a = document.createElement('a')
 
                     a.textContent = item.textContent
+                    a.title = item.textContent
                     a.href = `#${item.id}`
 
                     li.appendChild(a)
@@ -57,6 +58,7 @@ export default {
                     if (!lastLi) return
 
                     a.textContent = item.textContent
+                    a.title = item.textContent
                     a.href = `#${item.id}`
                     li.appendChild(a)
                     li.classList.add(this.h3Class)
