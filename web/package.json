@@ -13,6 +13,8 @@
         "highlight.js": "^11.9.0",
         "inline-attachment": "^2.0.3",
         "jquery": "^3.7.1",
+        "katex": "^0.16.10",
+        "mermaid": "^11.4.1",
         "popper.js": "^1.16.1",
         "vue": "^3.4.27"
     },

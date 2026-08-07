@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/v4-shims.min.css'
 import 'highlight.js/styles/base16/tomorrow-night.css'
 import 'easymde/dist/easymde.min.css'
 import '@vueform/multiselect/themes/default.css'
+import 'katex/dist/katex.min.css'
 import '../sass/app.scss'
 
 // jQuery 全局挂载须先于 bootstrap 执行
@@ -26,8 +27,42 @@ import Toc from './components/Toc.vue'
 window.hljs = hljs
 
 document.addEventListener('DOMContentLoaded', () => {
+    // mermaid 代码块转为 .mermaid 容器（须先于 hljs，避免高亮破坏源码）
+    document.querySelectorAll('pre code.language-mermaid').forEach((el) => {
+        const div = document.createElement('div')
+        div.className = 'mermaid'
+        div.textContent = el.textContent
+        el.closest('pre').replaceWith(div)
+    })
+
     // 代码高亮
     document.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el))
+
+    // mermaid 图表渲染（按需加载 chunk）
+    if (document.querySelector('.mermaid')) {
+        import('mermaid').then(({ default: mermaid }) => {
+            mermaid.initialize({ startOnLoad: false })
+            mermaid.run({ querySelector: '.mermaid' })
+        })
+    }
+
+    // LaTeX 公式渲染（KaTeX auto-render，pre/code/textarea 内默认忽略）
+    // 作用范围：文章正文、关于页及评论（均带 .markdown-body，不含 textarea）
+    if (document.querySelector('.markdown-body:not(textarea)')) {
+        import('katex/dist/contrib/auto-render.mjs').then(({ default: renderMathInElement }) => {
+            document.querySelectorAll('.markdown-body').forEach((el) => {
+                renderMathInElement(el, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true },
+                    ],
+                    throwOnError: false,
+                })
+            })
+        })
+    }
 
     // 评论回复表单展开/收起（partials/comments 里的 .reply-btn）
     document.querySelectorAll('.reply-btn').forEach((btn) => {

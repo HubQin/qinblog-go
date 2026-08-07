@@ -22,7 +22,7 @@
             <span>{{timeago $c.CreatedAt}}</span>
             {{if not $c.Approved}}<span class="badge badge-warning ml-2">审核中</span>{{end}}
         </div>
-        <div class="comment-content">{{$c.Content | safe}}</div>
+        <div class="comment-content markdown-body">{{$c.Content | safe}}</div>
         <div class="comment-actions small">
             {{if $user}}
                 <a href="javascript:;" class="reply-btn mr-2" data-target="#reply-form-{{$c.ID}}">回复</a>
