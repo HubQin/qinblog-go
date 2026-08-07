@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/qin/qinblog/internal/database"
@@ -87,10 +88,23 @@ func (s *sidebarService) Links() []models.LinkModel {
 func (s *sidebarService) Columns() []models.Column {
 	var columns []models.Column
 	if cacheGet(cacheKeyColumns, &columns) {
-		return columns
+		return normalizeColumnLinks(columns)
 	}
 	database.DB.Find(&columns)
 	cachePut(cacheKeyColumns, columns)
+	return normalizeColumnLinks(columns)
+}
+
+// normalizeColumnLinks 站内相对路径统一补前导 /（外链、锚点、绝对路径不动）。
+// 否则在 /posts/:id/:slug 等多级 URL 下，相对链接会解析到错误地址被 301 拉回。
+func normalizeColumnLinks(columns []models.Column) []models.Column {
+	for i := range columns {
+		link := columns[i].Link
+		if link == "" || strings.HasPrefix(link, "/") || strings.HasPrefix(link, "#") || strings.Contains(link, ":") {
+			continue
+		}
+		columns[i].Link = "/" + link
+	}
 	return columns
 }
 
