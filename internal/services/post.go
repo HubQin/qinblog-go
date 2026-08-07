@@ -45,6 +45,7 @@ func (s *postService) Update(post *models.Post, in PostInput) (*models.Post, err
 
 func (s *postService) save(post *models.Post, in PostInput, isNew bool) (*models.Post, error) {
 	oldCategoryID := post.CategoryID
+	oldTopicID := post.TopicID
 
 	// body 直接存 markdown 原文（展示时由 markdown 模板函数渲染+净化），摘要仍由渲染产物生成
 	post.Title = in.Title
@@ -100,18 +101,22 @@ func (s *postService) save(post *models.Post, in PostInput, isNew bool) (*models
 	}
 
 	// 等价 PostObserver::saved
-	s.afterSaved(post, oldCategoryID)
+	s.afterSaved(post, oldCategoryID, oldTopicID)
 	return post, nil
 }
 
-// afterSaved saved 后置处理：空 slug 异步翻译、更新分类计数、清缓存、同步搜索索引
-func (s *postService) afterSaved(post *models.Post, oldCategoryID uint) {
+// afterSaved saved 后置处理：空 slug 异步翻译、更新分类/专题计数、清缓存、同步搜索索引
+func (s *postService) afterSaved(post *models.Post, oldCategoryID, oldTopicID uint) {
 	if post.Slug == "" {
 		go s.translateSlug(post.ID, post.Title)
 	}
 	s.updateCategoryPostCount(post.CategoryID)
 	if oldCategoryID != 0 && oldCategoryID != post.CategoryID {
 		s.updateCategoryPostCount(oldCategoryID)
+	}
+	s.updateTopicPostCount(post.TopicID)
+	if oldTopicID != 0 && oldTopicID != post.TopicID {
+		s.updateTopicPostCount(oldTopicID)
 	}
 	Sidebar.ForgetPostRelated()
 	Search.IndexPost(post)
@@ -137,6 +142,7 @@ func (s *postService) Delete(post *models.Post) error {
 	}
 
 	s.updateCategoryPostCount(post.CategoryID)
+	s.updateTopicPostCount(post.TopicID)
 	Sidebar.ForgetPostRelated()
 	Search.DeletePost(post.ID)
 	return nil
@@ -260,6 +266,15 @@ func (s *postService) updateCategoryPostCount(categoryID uint) {
 	}
 	database.DB.Model(&models.Category{}).Where("id = ?", categoryID).UpdateColumn("post_count",
 		gorm.Expr("(SELECT COUNT(*) FROM posts WHERE category_id = ? AND is_show = 1)", categoryID))
+}
+
+// updateTopicPostCount 更新专题的已发布文章数（topics.post_count 此前从未被维护，导致专题页计数失真）
+func (s *postService) updateTopicPostCount(topicID uint) {
+	if topicID == 0 {
+		return
+	}
+	database.DB.Model(&models.Topic{}).Where("id = ?", topicID).UpdateColumn("post_count",
+		gorm.Expr("(SELECT COUNT(*) FROM posts WHERE topic_id = ? AND is_show = 1)", topicID))
 }
 
 // translateSlug 异步翻译标题生成 slug（等价 TranslateSlug 队列任务）
