@@ -51,7 +51,9 @@ qinblog-go/
 │   ├── src/             # Vite + Vue 3 源码（js / sass）
 │   └── public/          # 静态资源、Vite 构建产物（build/）
 ├── deploy/
-│   └── schema.sql       # 建表 DDL + 种子数据 + 演示数据
+│   ├── schema.sql       # 建表 DDL + 种子数据 + 演示数据
+│   └── docker/          # docker compose 部署（app + MySQL + Redis）
+├── Dockerfile           # 前端构建 + Go 静态编译 + alpine 运行时
 ├── storage/             # bleve 索引、上传文件
 ├── .env.example
 └── go.mod
@@ -120,6 +122,40 @@ go run ./cmd/server
 |---|---|---|
 | admin@example.com | password | 管理员 |
 | demo@example.com | password | 普通用户 |
+
+## Docker 部署
+
+镜像为三阶段构建（Vite 前端 → Go 静态编译 → alpine 运行时，非 root 用户运行），compose 编排 app + MySQL + Redis：
+
+```bash
+cd deploy/docker
+cp .env.example .env          # 修改 APP_KEY、DB_PASSWORD、APP_URL 等
+docker compose up -d --build
+# 访问 http://localhost:8080（宿主端口由 .env 的 APP_HOST_PORT 决定）
+```
+
+首次启动会自动完成：MySQL 执行 `deploy/schema.sql` 建表 + 种子数据 → app 检测到索引目录为空自动全量建 bleve 索引 → 启动 Web 服务。
+
+| 说明 | 内容 |
+|---|---|
+| 配置 | `deploy/docker/.env`（含密钥，勿提交）；`DB_HOST`/`REDIS_HOST` 等服务连接由 compose 固定注入 |
+| 数据卷 | `qinblog_mysql-data`、`qinblog_redis-data`、`qinblog_app-storage`（bleve 索引 + 上传文件） |
+| 端口 | app `APP_HOST_PORT`（默认 8080）；MySQL `3308`、Redis `6381` 仅为调试映射，生产可删 |
+| 反向代理 | `APP_URL` 填真实域名；容器内固定监听 8080 |
+
+常用运维命令：
+
+```bash
+docker compose logs -f app          # 查看日志
+docker compose up -d --build app    # 更新代码后重建并滚动重启
+docker compose down                 # 停止（保留数据卷）
+docker compose down -v              # 停止并清空数据（含库与索引）
+
+# 重建全文索引（bleve 为独占锁，须先停 app）
+docker compose stop app
+docker compose --profile tools run --rm indexer
+docker compose start app
+```
 
 ## 测试
 

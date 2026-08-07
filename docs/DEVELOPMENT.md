@@ -71,7 +71,7 @@
 - [ ] **邮件链路实测**：注册验证邮件、密码重置邮件代码已写（gomail + 签名 token），但 `.env` 未配 SMTP，未实测发信。
 - [ ] **GitHub OAuth 实测**：代码已写（x/oauth2），`.env` 未配 client id/secret。
 - [ ] **图片上传实测**：`posts/upload_post_image` 接口与 EasyMDE 拖拽对接已写，浏览器验证时未走真实文件上传。
-- [ ] 生产部署：目前 `go run` 方式运行，可补 Dockerfile / systemd 单元。
+- [x] 生产部署：已补 `Dockerfile` + `deploy/docker/docker-compose.yml`（app + MySQL + Redis，首次启动自动建表与建索引）；未提供 systemd 单元与反向代理（nginx/TLS）示例
 - [ ] 原库真实数据迁移演练（目前用的是 schema.sql 演示数据）。
 
 ## 验证证据

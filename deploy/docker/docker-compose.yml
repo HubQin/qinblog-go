@@ -1,0 +1,98 @@
+name: qinblog
+
+# 一键部署：cp .env.example .env && 修改密钥 && docker compose up -d --build
+# 应用/MySQL/Redis 三个服务，运行期数据（bleve 索引、上传文件）落在命名卷中
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: qinblog:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # 容器内固定的服务连接与路径，覆盖 .env 中的同名值
+      APP_ENV: production
+      APP_PORT: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      VITE_DEV: "false"
+      BLEVE_INDEX_PATH: /app/storage/bleve/posts.bleve
+      UPLOAD_PATH: /app/storage/app/public
+    ports:
+      - "${APP_HOST_PORT:-8080}:8080"
+    volumes:
+      - app-storage:/app/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-qinblog}
+      MYSQL_USER: ${DB_USERNAME:-qinblog}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      # 仅为便于本机连库调试，生产可删除该端口映射
+      - "${MYSQL_HOST_PORT:-3308}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # 首次启动（数据目录为空）自动执行建表 + 种子数据
+      - ../schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_HOST_PORT:-6381}:6379"
+    volumes:
+      - redis-data:/data
+
+  # 手动重建全文索引（bleve 索引为独占锁，必须先停 app）：
+  #   docker compose stop app
+  #   docker compose --profile tools run --rm indexer
+  #   docker compose start app
+  indexer:
+    image: qinblog:latest
+    profiles: ["tools"]
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      BLEVE_INDEX_PATH: /app/storage/bleve/posts.bleve
+    volumes:
+      - app-storage:/app/storage
+    command: ["/app/bin/indexer"]
+    healthcheck:
+      disable: true
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+  redis-data:
+  app-storage:
