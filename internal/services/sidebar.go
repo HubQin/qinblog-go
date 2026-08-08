@@ -64,10 +64,11 @@ func (s *sidebarService) Archives() []ArchiveItem {
 		return archives
 	}
 	database.DB.Model(&models.Post{}).
-		Select("DATE_FORMAT(created_at, '%Y-%m') AS year_month, COUNT(*) AS count").
+		// year_month 是 MySQL 8.0 保留字（YEAR_MONTH），SELECT 别名与 GROUP BY/ORDER BY 均需反引号包裹，否则报 1064
+		Select("DATE_FORMAT(created_at, '%Y-%m') AS `year_month`, COUNT(*) AS count").
 		Where("is_show = ?", 1).
-		Group("year_month").
-		Order("year_month DESC").
+		Group("`year_month`").
+		Order("`year_month` DESC").
 		Scan(&archives)
 	cachePut(cacheKeyArchives, archives)
 	return archives

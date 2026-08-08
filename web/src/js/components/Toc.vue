@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// 文章目录：扫描正文里的 h2/h3 生成锚点列表
+// 文章目录：扫描正文里的 h2/h3 生成锚点列表；正文只有 h1 时回退用 h1 生成（兼容全用 # 一级标题的旧文章）
 export default {
     name: 'Toc',
     props: {
@@ -17,9 +17,13 @@ export default {
     mounted() {
         this.$nextTick(() => {
             const toc = this.$refs.toc
-            const matches = document.querySelectorAll(
+            let matches = document.querySelectorAll(
                 `${this.contentSelector} h2, ${this.contentSelector} h3`
             )
+            // 无 h2/h3 时回退 h1（如从 hexo 迁移的文章章节全用 # 一级标题）
+            if (matches.length === 0) {
+                matches = document.querySelectorAll(`${this.contentSelector} h1`)
+            }
 
             if (matches.length === 0) {
                 const span = document.createElement('span')
@@ -33,7 +37,7 @@ export default {
                 if (!item.id) {
                     item.id = 'toc-' + Math.random().toString(36).substring(7)
                 }
-                if (item.tagName === 'H2') {
+                if (item.tagName === 'H2' || item.tagName === 'H1') {
                     const ul = document.createElement('ul')
                     const li = document.createElement('li')
                     const a = document.createElement('a')

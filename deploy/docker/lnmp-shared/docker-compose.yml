@@ -1,0 +1,112 @@
+# ============================================================
+# QinBlog 共享栈部署：现有 LNMP(mysql/redis/php/nginx) + Go 版 QinBlog
+# 适用：服务器 /docker 目录（Docker Compose v2）
+# 说明：qinblog 镜像已推送至腾讯云 CCR：ccr.ccs.tencentyun.com/qinblog/qinblog
+# 使用：cp .env.example .env && cp qinblog.env.example qinblog.env（配置密码/密钥）→ docker compose up -d
+# ============================================================
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql/mysql-server:8.0.28
+    command: --authentication_policy=mysql_native_password --sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./conf/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+    ports:
+      - "127.0.0.1:3306:3306"        # 只绑回环，宿主机仍可调试
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  redis:
+    container_name: redis
+    image: redis:6.2.8-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+      - ./conf/redis/redis.conf:/etc/redis/redis.conf
+    ports:
+      - "127.0.0.1:6379:6379"        # 只绑回环
+    command: "redis-server /etc/redis/redis.conf --appendonly yes"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  php:
+    container_name: php
+    build:
+      context: ./dockerfiles/php
+    expose:
+      - 9501
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ../project:/www/:rw
+      - ./conf/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./conf/php/php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./logs/php:/var/log/php
+      - ./data/composer:/tmp/composer
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    working_dir: /www
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - ../project:/www/:rw
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - php
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ---------- Go 版 QinBlog（复用共享 mysql/redis，同网络服务名直连） ----------
+  # 应用环境变量全部集中在 qinblog.env（含密钥，已 gitignore，服务器上 chmod 600）
+  qinblog:
+    container_name: qinblog
+    image: ccr.ccs.tencentyun.com/qinblog/qinblog:2026-08-08
+    restart: unless-stopped
+    env_file:
+      - qinblog.env
+    ports:
+      - "127.0.0.1:8080:8080"      # 仅本机验证用；接入 nginx 反代后可注释掉
+    volumes:
+      - qinblog-storage:/app/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  qinblog-storage:                 # bleve 全文索引 + 上传图片，命名卷持久化
