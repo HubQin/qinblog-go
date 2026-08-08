@@ -80,7 +80,7 @@
             <div class="card-header">
                 <a href="#" class="collapse-link" data-toggle="collapse" data-target="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories">分类<i class="fas fa-chevron-down float-right"></i></a>
             </div>
-            <div id="sidebarCategories" class="collapse">
+            <div id="sidebarCategories" class="collapse{{if eq .routeClass "index-page"}} show{{end}}">
                 <ul class="list-group list-group-flush">
                     {{range .categories}}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -98,7 +98,7 @@
             <div class="card-header">
                 <a href="#" class="collapse-link" data-toggle="collapse" data-target="#sidebarArchives" aria-expanded="false" aria-controls="sidebarArchives">归档<i class="fas fa-chevron-down float-right"></i></a>
             </div>
-            <div id="sidebarArchives" class="collapse">
+            <div id="sidebarArchives" class="collapse{{if eq .routeClass "index-page"}} show{{end}}">
                 <ul class="list-group list-group-flush">
                     {{range .archives}}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
