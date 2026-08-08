@@ -122,6 +122,12 @@ func (s *postService) afterSaved(post *models.Post, oldCategoryID, oldTopicID ui
 	Search.IndexPost(post)
 }
 
+// RefreshCounts 重新统计文章所属分类/专题的已发布文章数（显示/隐藏切换等不经过 save/Delete 的场景）
+func (s *postService) RefreshCounts(post *models.Post) {
+	s.updateCategoryPostCount(post.CategoryID)
+	s.updateTopicPostCount(post.TopicID)
+}
+
 // Delete 删除文章（等价 PostObserver::deleting/deleted）
 func (s *postService) Delete(post *models.Post) error {
 	var tagIDs []uint

@@ -70,6 +70,8 @@ func PostToggleShow(c *gin.Context) {
 			newVal = 0
 		}
 		database.DB.Model(&post).UpdateColumn("is_show", newVal)
+		post.IsShow = newVal
+		services.Posts.RefreshCounts(&post)
 		services.Sidebar.ForgetPostRelated()
 	}
 	c.Redirect(http.StatusFound, back(c, "/admin/posts"))

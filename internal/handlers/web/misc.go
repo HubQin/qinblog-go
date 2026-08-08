@@ -61,7 +61,9 @@ func TagShow(c *gin.Context) {
 // TopicsIndex 专题列表页（GET /topics，每个专题展示前 5 篇）
 func TopicsIndex(c *gin.Context) {
 	var topics []models.Topic
-	database.DB.Find(&topics)
+	// 仅展示有已发布文章的专题，文章删光后空专题不再停留在前台
+	database.DB.Where("id IN (?)", database.DB.Model(&models.Post{}).
+		Where("is_show = ?", 1).Select("topic_id")).Find(&topics)
 	// Preload+Limit 无法按父级限数，逐个专题取前 5 篇
 	for i := range topics {
 		database.DB.Select("id", "title", "slug", "topic_id", "created_at").
