@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,13 +19,13 @@ import (
 )
 
 // hexo 博客文章迁移命令：
-// 1. 解析 D:\hexo-blog\source\_posts 下的 Markdown 文章（front matter: title/date/tags）
+// 1. 解析 -src 目录下（默认 D:\hexo-blog\source\_posts）的 Markdown 文章（front matter: title/date/tags）
 // 2. 将正文引用的本地图片复制到 UPLOAD_PATH 下，并把引用重写为 /storage/... 绝对路径
 // 3. 复用 services.Posts.Store 创建文章（标签关联/计数维护/搜索索引/缓存失效自动完成）
 // 4. 回写 created_at/updated_at 保留 hexo 原始发布时间
+// 幂等：slug 已存在的文章自动跳过，可安全重跑
 
 const (
-	hexoPostsDir    = `D:\hexo-blog\source\_posts`
 	defaultCategory = 10 // Other
 	adminUserID     = 1
 )
@@ -41,6 +42,9 @@ type hexoPost struct {
 }
 
 func main() {
+	srcDir := flag.String("src", `D:\hexo-blog\source\_posts`, "hexo _posts 源目录")
+	flag.Parse()
+
 	cfg := config.Load()
 	if err := database.Init(cfg); err != nil {
 		log.Fatalf("database init: %v", err)
@@ -50,12 +54,21 @@ func main() {
 
 	ensureTagNameCapacity()
 
-	posts := parseHexoPosts()
+	posts := parseHexoPosts(*srcDir)
 	if len(posts) == 0 {
 		log.Fatal("未发现可迁移的文章")
 	}
 
+	migrated := 0
 	for _, p := range posts {
+		// 幂等：slug 已存在则跳过（重跑/多环境迁移安全）
+		var count int64
+		database.DB.Model(&models.Post{}).Where("slug = ?", p.Slug).Count(&count)
+		if count > 0 {
+			log.Printf("[skip] %q slug=%s 已存在", p.Title, p.Slug)
+			continue
+		}
+
 		body := migrateImages(&p)
 		tagIDs := resolveTagIDs(p.Tags)
 
@@ -79,9 +92,10 @@ func main() {
 		}
 
 		log.Printf("[ok] #%d %q (slug=%s, tags=%v, date=%s)", post.ID, p.Title, post.Slug, p.Tags, p.Date.Format("2006-01-02"))
+		migrated++
 	}
 
-	log.Printf("迁移完成，共 %d 篇文章", len(posts))
+	log.Printf("迁移完成，新增 %d 篇文章（源目录共 %d 篇）", migrated, len(posts))
 }
 
 // ensureTagNameCapacity tags.name 原为 varchar(10)，无法容纳 golangci-lint(12字符)，需扩容
@@ -97,18 +111,18 @@ func ensureTagNameCapacity() {
 	}
 }
 
-// parseHexoPosts 解析 _posts 目录下的文章，排除 hello-world.md 示例文章
-func parseHexoPosts() []hexoPost {
-	entries, err := os.ReadDir(hexoPostsDir)
+// parseHexoPosts 解析指定目录下的文章，排除 hello-world.md 示例文章
+func parseHexoPosts(dir string) []hexoPost {
+	entries, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatalf("读取 %s: %v", hexoPostsDir, err)
+		log.Fatalf("读取 %s: %v", dir, err)
 	}
 	var posts []hexoPost
 	for _, e := range entries {
 		if e.IsDir() || !strings.HasSuffix(e.Name(), ".md") || e.Name() == "hello-world.md" {
 			continue
 		}
-		file := filepath.Join(hexoPostsDir, e.Name())
+		file := filepath.Join(dir, e.Name())
 		data, err := os.ReadFile(file)
 		if err != nil {
 			log.Fatalf("读取 %s: %v", file, err)

@@ -345,12 +345,17 @@ input, select {
             }
         }
 
-        /* 一级标题条目 */
+        /* 一级标题条目（h1） */
+        .toc-1 > a {
+            font-weight: 700;
+        }
+
+        /* 二级标题条目（h2；无 h1 时作顶级） */
         .toc-2 > a {
             font-weight: 600;
         }
 
-        /* 二级标题条目 */
+        /* 三级标题条目（h3） */
         .toc-3 > a {
             font-size: 12.5px;
             color: #777;
