@@ -167,6 +167,25 @@ html {
     }
 }
 
+/* 侧栏折叠卡片（分类/归档）：整行可点击，展开时箭头旋转 */
+.sidebar .collapse-link {
+    display: block;
+    color: inherit;
+
+    &:hover {
+        color: var(--main-color);
+    }
+
+    .fa-chevron-down {
+        line-height: inherit;
+        transition: transform 0.25s ease;
+    }
+
+    &[aria-expanded='true'] .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+}
+
 .form-control input {
     min-height: 40px;
     display: block;

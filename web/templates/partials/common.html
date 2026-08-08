@@ -56,7 +56,7 @@
 {{end}}
 
 {{define "partials/sidebar"}}
-<aside class="blog-sidebar">
+<aside class="sidebar blog-sidebar">
     {{with index .siteConfigs "notice"}}
         <div class="card mb-4">
             <div class="card-header">公告</div>
@@ -77,29 +77,37 @@
 
     {{if .categories}}
         <div class="card mb-4">
-            <div class="card-header">分类</div>
-            <ul class="list-group list-group-flush">
-                {{range .categories}}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="/categories/{{.ID}}">{{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.Name}}</a>
-                        <span class="badge badge-secondary badge-pill">{{.PostCount}}</span>
-                    </li>
-                {{end}}
-            </ul>
+            <div class="card-header">
+                <a href="#" class="collapse-link" data-toggle="collapse" data-target="#sidebarCategories" aria-expanded="false" aria-controls="sidebarCategories">分类<i class="fas fa-chevron-down float-right"></i></a>
+            </div>
+            <div id="sidebarCategories" class="collapse">
+                <ul class="list-group list-group-flush">
+                    {{range .categories}}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/categories/{{.ID}}">{{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.Name}}</a>
+                            <span class="badge badge-secondary badge-pill">{{.PostCount}}</span>
+                        </li>
+                    {{end}}
+                </ul>
+            </div>
         </div>
     {{end}}
 
     {{if .archives}}
         <div class="card mb-4">
-            <div class="card-header">归档</div>
-            <ul class="list-group list-group-flush">
-                {{range .archives}}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="/archives/{{.YearMonth}}">{{.YearMonth}}</a>
-                        <span class="badge badge-secondary badge-pill">{{.Count}}</span>
-                    </li>
-                {{end}}
-            </ul>
+            <div class="card-header">
+                <a href="#" class="collapse-link" data-toggle="collapse" data-target="#sidebarArchives" aria-expanded="false" aria-controls="sidebarArchives">归档<i class="fas fa-chevron-down float-right"></i></a>
+            </div>
+            <div id="sidebarArchives" class="collapse">
+                <ul class="list-group list-group-flush">
+                    {{range .archives}}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="/archives/{{.YearMonth}}">{{.YearMonth}}</a>
+                            <span class="badge badge-secondary badge-pill">{{.Count}}</span>
+                        </li>
+                    {{end}}
+                </ul>
+            </div>
         </div>
     {{end}}
 
