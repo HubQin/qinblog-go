@@ -41,6 +41,7 @@ storage/app/
 .idea/
 .vscode/
 .qoder/
+!.qoder/skills/
 *.iml
 *.swp
 *~
