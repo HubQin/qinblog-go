@@ -41,7 +41,6 @@ storage/app/
 .idea/
 .vscode/
 .qoder/
-!.qoder/skills/
 *.iml
 *.swp
 *~
@@ -50,3 +49,5 @@ storage/app/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+deploy/migrate/
