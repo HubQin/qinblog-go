@@ -148,6 +148,30 @@ html {
     margin-bottom: 1em;
 }
 
+/* 文章列表：标题深色、悬停主题青；元信息链接浅灰，避免通篇默认蓝 */
+.post-item {
+    h2 a {
+        color: #343a40;
+        font-weight: 600;
+        transition: color .15s ease;
+
+        &:hover {
+            color: $link-color;
+            text-decoration: none;
+        }
+    }
+
+    .post-meta a {
+        color: #8b959c;
+        transition: color .15s ease;
+
+        &:hover {
+            color: $link-color;
+            text-decoration: none;
+        }
+    }
+}
+
 .posts-search-page {
     .post-title {
         font-weight: 600;
@@ -162,8 +186,19 @@ html {
 }
 
 .sidebar a {
+    transition: color .15s ease;
+
     &:hover {
         text-decoration: none;
+    }
+}
+
+/* 侧栏分类/归档列表：中性色为主，悬停再点亮为主题青 */
+.sidebar .list-group-item a {
+    color: #555;
+
+    &:hover {
+        color: $link-color;
     }
 }
 
@@ -338,7 +373,7 @@ input, select {
             transition: color .15s ease, background-color .15s ease, border-color .15s ease;
 
             &:hover {
-                color: #2a86b5;
+                color: $link-color;
                 background-color: rgba(147, 213, 220, 0.12);
                 border-left-color: #93d5dc;
                 text-decoration: none;
